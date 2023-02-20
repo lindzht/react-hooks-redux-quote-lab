@@ -1,22 +1,31 @@
 import React, { useState } from "react";
 import { v4 as uuid } from "uuid";
 import { addQuote } from "./quotesSlice";
+import { useDispatch } from "react-redux";
 
 function QuoteForm() {
+
+  const dispatch = useDispatch();
+
   const [formData, setFormData] = useState({
-    // set up a controlled form with internal state
-    // look at the form to determine what keys need to go here
+    content: "",
+    author: "",
   });
 
-  function handleChange(event) {
-    // Handle Updating Component State
+  function handleChange(e) {
+    const key = e.target.name
+    const value = e.target.value
+
+    setFormData({
+      ...formData,
+      [key]: value
+    })
   }
 
-  function handleSubmit(event) {
-    // Handle Form Submit event default
-    // Create quote object from state
-    // Pass quote object to action creator
-    // Update component state to return to default state
+  function handleSubmit(e) {
+    e.preventDefault();
+    dispatch(addQuote({...formData, id: uuid(), votes: 0}));
+    setFormData({content: "", author: ""})
   }
 
   return (
@@ -34,7 +43,9 @@ function QuoteForm() {
                     <textarea
                       className="form-control"
                       id="content"
+                      name="content"
                       value={formData.content}
+                      onChange={handleChange}
                     />
                   </div>
                 </div>
@@ -47,13 +58,15 @@ function QuoteForm() {
                       className="form-control"
                       type="text"
                       id="author"
+                      name="author"
                       value={formData.author}
+                      onChange={handleChange}
                     />
                   </div>
                 </div>
                 <div className="form-group">
                   <div className="col-md-6 col-md-offset-4">
-                    <button type="submit" className="btn btn-default">
+                    <button type="submit" className="btn btn-default" onSubmit={handleSubmit}>
                       Add
                     </button>
                   </div>
